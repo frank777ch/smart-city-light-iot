@@ -11,6 +11,8 @@ services:
     volumes:
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    command: mosquitto -c /mosquitto/config/mosquitto.conf
 
   node-red:
     image: nodered/node-red:latest
