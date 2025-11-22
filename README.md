@@ -7,7 +7,7 @@ sudo ip addr add 192.168.101.210/24 dev wlo1
 sudo ip route add default via 192.168.101.1
 sudo bash -c 'echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" > /etc/resolv.conf'
 
-docker compose up -d 
+docker compose up -d
 docker ps
 docker compose down
 
@@ -30,6 +30,8 @@ PubSubClient - PubSubClient by Nick O'Leary
 ## Node Red
 
 http://localhost:1880/
+
+docker-compose up -d
 
 Add firmware/PWM to your C:\Users\YOUR_USER\Documents\Arduino\libraries
 

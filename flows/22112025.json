@@ -1,0 +1,151 @@
+[
+    {
+        "id": "f6f2187d.f17ca8",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "3cc11d24.ff01a2",
+        "type": "comment",
+        "z": "f6f2187d.f17ca8",
+        "name": "WARNING: please check you have started this container with a volume that is mounted to /data\\n otherwise any flow changes are lost when you redeploy or upgrade the container\\n (e.g. upgrade to a more recent node-red docker image).\\n  If you are using named volumes you can ignore this warning.\\n Double click or see info side panel to learn how to start Node-RED in Docker to save your work",
+        "info": "\nTo start docker with a bind mount volume (-v option), for example:\n\n```\ndocker run -it -p 1880:1880 -v /home/user/node_red_data:/data --name mynodered nodered/node-red\n```\n\nwhere `/home/user/node_red_data` is a directory on your host machine where you want to store your flows.\n\nIf you do not do this then you can experiment and redploy flows, but if you restart or upgrade the container the flows will be disconnected and lost. \n\nThey will still exist in a hidden data volume, which can be recovered using standard docker techniques, but that is much more complex than just starting with a named volume as described above.",
+        "x": 350,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "d766db3b767c6d94",
+        "type": "mqtt in",
+        "z": "f6f2187d.f17ca8",
+        "name": "Escuchar Telemetría de Farolas",
+        "topic": "proyecto/farolas/+/telemetria",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "0f0b57420812fb6c",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 390,
+        "y": 1140,
+        "wires": [
+            [
+                "formato_influx_real"
+            ]
+        ]
+    },
+    {
+        "id": "formato_influx_real",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Preparar para Influx",
+        "func": "var datos = msg.payload;\nvar topico = msg.topic;\nvar deviceId = \"Desconocido\";\n\nif (topico) {\n    var partes = topico.split(\"/\");\n    if (partes.length > 2) deviceId = partes[2];\n}\n\nmsg.payload = [{\n    measurement: \"telemetria_farola\",\n    tags: {\n        dispositivo: deviceId\n    },\n    fields: {\n        voltaje_V: Number(datos.voltage_V),\n        corriente_mA: Number(datos.current_mA),\n        potencia_mW: Number(datos.power_mW),\n        pir_state: Number(datos.pir_state),\n        led_duty: Number(datos.led_duty)\n    }\n}];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1120,
+        "wires": [
+            [
+                "nodo_influx_cloud_final",
+                "debug_final"
+            ]
+        ]
+    },
+    {
+        "id": "debug_final",
+        "type": "debug",
+        "z": "f6f2187d.f17ca8",
+        "name": "Ver Salida Real",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1120,
+        "y": 1240,
+        "wires": []
+    },
+    {
+        "id": "nodo_influx_cloud_final",
+        "type": "influxdb out",
+        "z": "f6f2187d.f17ca8",
+        "influxdb": "8e8518a79430b130",
+        "name": "Guardar en Nube",
+        "measurement": "telemetria_farola",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "LUMINARY",
+        "bucket": "farolas_iot",
+        "x": 1140,
+        "y": 1080,
+        "wires": []
+    },
+    {
+        "id": "0f0b57420812fb6c",
+        "type": "mqtt-broker",
+        "name": "Cloud",
+        "broker": "87db8cfc6f614558958fb91c28b95044.s1.eu.hivemq.cloud",
+        "port": "8883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "8e8518a79430b130",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": 8086,
+        "protocol": "http",
+        "database": "database",
+        "name": "InfluxDB",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "https://us-east-1-1.aws.cloud2.influxdata.com",
+        "timeout": 10,
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "478573f937acdee1",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-contrib-influxdb": "0.7.0"
+        }
+    }
+]
