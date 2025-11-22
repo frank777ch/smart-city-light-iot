@@ -4,6 +4,10 @@
 #include <Arduino.h>
 #include "driver/ledc.h"
 
+#define DEFAULT_PWM_RESOLUTION 8
+#define DEFAULT_PWM_CHANNEL LEDC_CHANNEL_0 
+#define DEFAULT_PWM_TIMER LEDC_TIMER_0
+
 class SimplePWM {
 public:
     gpio_num_t pin;
@@ -11,6 +15,10 @@ public:
     int freq;
     int resolution;
     int maxDuty;
+
+    SimplePWM(int pin, int freq = 5000, int channel = DEFAULT_PWM_CHANNEL, int resolution = DEFAULT_PWM_RESOLUTION) {
+        begin(pin, channel, freq, resolution);
+    }
 
     void begin(int pin, int channel, int freq, int resolution) {
         this->pin = (gpio_num_t)pin;
@@ -22,25 +30,25 @@ public:
         ledc_timer_config_t timer_conf = {
             .speed_mode = LEDC_HIGH_SPEED_MODE,
             .duty_resolution = (ledc_timer_bit_t)resolution,
-            .timer_num = LEDC_TIMER_0,
+            .timer_num = DEFAULT_PWM_TIMER,
             .freq_hz = (uint32_t)freq,
             .clk_cfg = LEDC_AUTO_CLK
         };
         ledc_timer_config(&timer_conf);
 
         ledc_channel_config_t ch_conf = {
-            .gpio_num = (int)pin,
+            .gpio_num = pin, // Ya es int
             .speed_mode = LEDC_HIGH_SPEED_MODE,
             .channel = (ledc_channel_t)channel,
             .intr_type = LEDC_INTR_DISABLE,
-            .timer_sel = LEDC_TIMER_0,
+            .timer_sel = DEFAULT_PWM_TIMER,
             .duty = 0,
             .hpoint = 0
         };
         ledc_channel_config(&ch_conf);
     }
 
-    int readDuty() {
+    int readDuty() { 
         return ledc_get_duty(LEDC_HIGH_SPEED_MODE, channel);
     }
 

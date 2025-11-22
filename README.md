@@ -30,3 +30,12 @@ PubSubClient - PubSubClient by Nick O'Leary
 ## Node Red
 
 http://localhost:1880/
+
+Add firmware/PWM to your C:\Users\YOUR_USER\Documents\Arduino\libraries
+
+87db8cfc6f614558958fb91c28b95044.s1.eu.hivemq.cloud
+
+8883
+
+frank
+IoT2025FERMIN
