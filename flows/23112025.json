@@ -1,0 +1,23 @@
+[
+    {
+        "id": "formato_influx_real",
+        "type": "function",
+        "z": "f6f2187d.f17ca8",
+        "name": "Preparar para Influx",
+        "func": "var p = msg.payload;\nvar topico = msg.topic; \nvar deviceId = \"Desconocido\";\n\nif (topico) {\n    var partes = topico.split(\"/\");\n    if (partes.length > 2) {\n        deviceId = partes[2];\n    }\n}\n\nmsg.payload = [{\n    measurement: \"telemetria_farola\",\n    \n    tags: {\n        dispositivo: deviceId\n    },\n    \n    fields: {\n        pir_state: Number(p.pir_state),\n        led_duty: Number(p.led_duty),\n        luz_ambiente: Number(p.ldr_val),\n        \n        voltaje_V: Number(p.voltage_V),\n        corriente_mA: Number(p.current_mA),\n        potencia_mW: Number(p.power_mW)\n    }\n}];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 780,
+        "y": 1120,
+        "wires": [
+            [
+                "nodo_influx_cloud_final",
+                "debug_final"
+            ]
+        ]
+    }
+]

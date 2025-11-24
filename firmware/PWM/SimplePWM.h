@@ -37,7 +37,7 @@ public:
         ledc_timer_config(&timer_conf);
 
         ledc_channel_config_t ch_conf = {
-            .gpio_num = pin, // Ya es int
+            .gpio_num = pin,
             .speed_mode = LEDC_HIGH_SPEED_MODE,
             .channel = (ledc_channel_t)channel,
             .intr_type = LEDC_INTR_DISABLE,
