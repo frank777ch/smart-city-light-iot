@@ -1,18 +1,17 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 
-const char* ssid = "CONDOR-5G";
-const char* password = "";
-const char* mqtt_server = "192.168.1.210";
+const char* ssid = "CONDOR";
+const char* password = "Semisuma16512002!";
+const char* mqtt_server = "192.168.101.210";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
-
 char deviceId[20];
 char telemetryTopic[50];
 
 void setup() {
-  Serial.begin(115220);
+  Serial.begin(115200);
   delay(10);
 
   uint8_t mac[6];
@@ -40,13 +39,10 @@ void setup() {
 }
 
 void reconnect() {
-  
-    while (!client.connected()) {
+  while (!client.connected()) {
     Serial.print("Intentando conexion MQTT...");
-    
     if (client.connect(deviceId)) {
       Serial.println("conectado!");
-    
       client.publish(telemetryTopic, "{\"status\": \"online\"}");
     } else {
       Serial.print("fallo, rc=");
@@ -58,13 +54,12 @@ void reconnect() {
 }
 
 void loop() {
-  
   if (!client.connected()) {
     reconnect();
   }
   client.loop();
 
-    static unsigned long lastMsg = 0;
+  static unsigned long lastMsg = 0;
   if (millis() - lastMsg > 10000) {
     lastMsg = millis();
     char msg[50];
