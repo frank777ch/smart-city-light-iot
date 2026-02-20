@@ -8,6 +8,7 @@ sudo ip route add default via 192.168.101.1
 sudo bash -c 'echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" > /etc/resolv.conf'
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 docker compose up -d
 docker ps
 docker compose down
@@ -42,6 +43,9 @@ Add firmware/PWM to your C:\Users\YOUR_USER\Documents\Arduino\libraries
 
 frank
 IoT2025FERMIN
+=======
+ip -4 addr show dev wlo1
+>>>>>>> Stashed changes
 =======
 ip -4 addr show dev wlo1
 >>>>>>> Stashed changes
